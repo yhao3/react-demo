@@ -1,70 +1,301 @@
-# Getting Started with Create React App
+# 前期的知識準備
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+---
 
-## Available Scripts
+1. JavaScript
+2. HTML + CSS
+3. 構建工具: Webpack
+    
+    http://yunp.top/init/p/v/1
+    
+    功能: ex 可自動刷新
+    
+4. 安裝 node
+    
+    npm
+    
+    http://yump.top/init/p/v/1
+    
+5. cnpm 命令: 
+    
+    http://npm.taobao.org/
+    
+6. 官方文檔: 
+    
+    http://reactjs.org/docs/hello-world.html
+    
 
-In the project directory, you can run:
+# 創建 React 專案
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```java
+npm create-react-app
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```java
+cd react-demo
+```
 
-### `npm test`
+```java
+npm start
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# 環境介紹
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- node-module: 非常肥
+- public: 入口文件
+- src: 源碼文件
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+# React 基礎知識
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## JSX 語法介紹
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- 參數為一個「標籤」，而非字串、物件等
+- JSX 語法 = JavaScript + XML
+- 解讀 JSX 語法:
+    - 遇到 `<>`: 按照 XML 語法解析
+    - 遇到 `{}`: 按照 JavaScript 語法解析
+    - 
+- ex:
+    
+    ```jsx
+    ReactDOM.render(<h1>Hello React!<h1>, document.getElementById('root'));
+    // 錯誤的: 
+    ReactDOM.render(~~"<h1>Hello React!<h1>"~~, document.getElementById('root'));
+    ```
+    
+    添加變數: 
+    
+    ```jsx
+    const xxx = "React"
+    ReactDOM.render(<h1>Hello {xxx}!<h1>, document.getElementById('root'));
+    ```
+    
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 元素渲染 render function
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```jsx
+function tick() {
+    const element = (
+        <div>
+            <h1>Hello, world!</h1>
+            <h2>It is { new Date().toLocalTimeString() }</h2>
+        <div>
+    )
+    ReactDOM.render(element, document.getElementById('root')); // 正確擺放位置，擺這裡 tick function 才會被調用
+}
+setInterval(tick, 1000);
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+~~ReactDOM.render(element, document.getElementById('root'));~~ // 錯誤擺放位置
+```
 
-## Learn More
+## 組件
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- 組件的副檔名可以是.js，也可以是.jsx
+    
+    <aside>
+    💡 但.js不會有提示
+    
+    </aside>
+    
+- ex:
+    - Home.jsx
+        
+        ```jsx
+        import React from "react"
+        
+        export default class Home extends React.Component {
+        	render() {
+        		return (
+        			<div>Home</div>
+        		)
+        	}
+        }
+        ```
+        
+    - app.jsx
+        
+        ```jsx
+        import React from "react"
+        import Home from "./Home" // Component 之間可以互相引用
+        
+        // 用類別的形式創建組件，Hook 形式: 
+        class App extends React.Component {
+        	// 渲染函式
+        	render() {
+        		return (
+        			<div>
+        				<h1>Hello React Component</h1>
+        				<h3>learning React...</h3>
+        				<Home /> // 以標籤形式使用引用的組件(Component)
+        			</div>
+        		)
+        	}
+        }
+        
+        export default App
+        ```
+        
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## porps 屬性
 
-### Code Splitting
+- Component 的複用性很重要
+- app.jsx
+    
+    ```jsx
+    import React from "react"
+    import Home from "./Home" // Component 之間可以互相引用
+    import MyNav from "./MyNav"
+    
+    // 用類別的形式創建組件，Hook 形式: 
+    class App extends React.Component {
+    	// 渲染函式
+    	render() {
+    
+            const nav1 = ["首頁", "學習", "影片"];
+            const nav2 = ["WEB", "Java", "Node"];
+    
+    		return (
+    			<div>
+    				<h1>Hello React Component</h1>
+    				<h3>learning React...</h3>
+    				<Home /> {/* 以標籤形式使用引用的組件(Component) */}
+                    <MyNav nav={ nav1 } title="路徑導航"/>
+                    <MyNav nav={ nav2 } title="學習導航"/>
+    			</div>
+    		)
+    	}
+    }
+    
+    export default App
+    ```
+    
+- MyNav.jsx
+    
+    ```jsx
+    import React from "react";
+    
+    // props 不可以被 MyNav.jsx 修改 (因為它屬於 app.jsx，不屬於 MyNav.jsx，故只能使用不能修改 )
+    export default class MyNav extends React.Component {
+        render() {
+            console.log(this.props.nav);
+            return (
+            <div>
+                {/* jsx 語法 */}
+                <h3>{ this.props.title }</h3>
+                <ul>
+                    {
+                        // this.prop.nav 為 app.jsx 中宣告的陣列
+                        // map 遍歷陣列，屬性(1): 當前元素; 屬性(2): 當前元素的index
+                        this.props.nav.map((element, index) => {
+                            return <li key={index}>{ element }</li>
+                        })
+                    }
+                </ul>
+            </div>
+            )
+        }
+    }
+    ```
+    
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## State
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- StateComponent.jsx
+    
+    ```jsx
+    import React from "react";
+    
+    export default class StateComponent extends React.Component {
+        /**
+         * 組件中的狀態: state
+         * 1. 以前我們操作頁面的元素的變化，都是修改 DOM，操作 DOM
+         * 2. 但是有了 React 後，我們不再推薦操作 DOM，頁面元素的改變使用 State 進行處理
+         */
+    
+        constructor(prop) {
+            super(prop);
+            // 定義
+            this.state = {
+                count: 10, 
+                flag: true // default: true
+            }
+        }
+    
+        increment() {
+            // setState
+            this.setState({
+                count: this.state.count += 1
+            })
+        }
+        
+        decrement() {
+            // setState
+            this.setState({
+                count: this.state.count -= 1
+            })
+        }
+    
+        clickHandler = () => {
+            console.log(this);
+        }
+    
+        changeFlag() {
+            this.setState({
+                flag: this.state.flag = !this.state.flag
+            })
+        }
+        
+        render() {
+            let showView = this.state.flag ? '我是孫悟空' : '我是豬八戒'
+            return (
+                <div>
+                    <h3>Component's State</h3>
+                    <p>{ this.state.count }</p>
+                    <button onClick={ this.increment.bind(this) }>增加</button>
+                    <button onClick={ this.decrement.bind(this) }>減少</button>
+                    <button onClick={ this.clickHandler }>ABOUT this</button>
+                    <p>{ showView }</p>
+                    <button onClick={ this.changeFlag.bind(this) }>change flag</button>
+                </div>
+            )
+        }
+    }
+    ```
+    
+- app.jsx
+    
+    ```jsx
+    import React from "react"
+    import Home from "./Home" // Component 之間可以互相引用
+    import MyNav from "./MyNav"
+    import StateComponent from "./StateComponent";
+    
+    // 用類別的形式創建組件，Hook 形式: 
+    class App extends React.Component {
+    	// 渲染函式
+    	render() {
+    
+            const nav1 = ["首頁", "學習", "影片"];
+            const nav2 = ["WEB", "Java", "Node"];
+    
+    		return (
+    			<div>
+    				<h1>Hello React Component</h1>
+    				<h3>learning React...</h3>
+    				<Home /> {/* 以標籤形式使用引用的組件(Component) */}
+                    <MyNav nav={ nav1 } title="路徑導航"/>
+                    <MyNav nav={ nav2 } title="學習導航"/>
+                    <StateComponent />
+    			</div>
+    		)
+    	}
+    }
+    
+    export default App
+    ```
